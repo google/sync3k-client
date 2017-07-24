@@ -1,8 +1,8 @@
 import Dexie from 'dexie';
-import uuidV4 from 'uuid/v4';
+import uuidV4 = require('uuid/v4');
 import { travelBack, encryptedMessage, keyDerivation, setLocalEcdhKey, askForKeys, keyResponse, initializeSync } from '../actions/sync3kAction';
-import base64js from 'base64-js';
-import scrypt from 'scrypt-async';
+import base64js = require('base64-js');
+import scrypt = require('scrypt-async');
 import { Sync3kState } from '../states/sync3kState';
 
 class SyncEngine {
