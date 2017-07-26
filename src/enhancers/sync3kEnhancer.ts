@@ -3,7 +3,7 @@ import { Sync3kState, Sync3kLocalState } from '../states/sync3kstate';
 import { sync3kReducer } from '../reducers/sync3kReducer';
 
 const synk3kTimeTraveler = <S>(reducer: Reducer<S>) => (state: S & Sync3kState, action: AnyAction) => {
-  if (action.type === 'SYNC3K_TRAVEL_BACK') {
+  if (action.type === '@@sync3k/SYNC3K_TRAVEL_BACK') {
     return action.state;
   }
   return reducer(state, action);

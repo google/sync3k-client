@@ -216,18 +216,18 @@ export const SyncActions = (store) => (next) => {
   let syncEngine;
 
   return (action) => {
-    if (action.type === 'SYNC3K_INITIALIZE') {
+    if (action.type === '@@sync3k/SYNC3K_INITIALIZE') {
       syncEngine = new SyncEngine(action.baseUrl, action.topic, action.password, action.askForKeys, store, next);
       syncEngine.initialize();
       return next(action);
     }
     let actionToRun;
-    if (action.type === 'SYNC3K_CHAIN_KEY_DERIVATION') {
+    if (action.type === '@@sync3k/SYNC3K_CHAIN_KEY_DERIVATION') {
       actionToRun = keyDerivation(action.id, store.getState().sync3k.latest, action.salt, action.algorithm, action.parameters);
     } else {
       actionToRun = action;
     }
-    if (action.type === 'SYNC3K_GIVE_KEYS') {
+    if (action.type === '@@sync3k/SYNC3K_GIVE_KEYS') {
       return cryptoDriver.giveKey(action.targetPublicKey).then((keyMessage) => {
         return syncEngine.receiveLocalAction(keyMessage);
       });
@@ -300,9 +300,9 @@ const cryptoDriver = new class {
       return Promise.resolve(msg);
     }
     const messageType = JSON.parse(msg).type;
-    if (messageType === 'SYNC3K_KEY_DERIVATION_ALGORITHM' ||
-      messageType === 'SYNC3K_ASK_FOR_KEYS' ||
-      messageType === 'SYNC3K_KEY_RESPONSE') {
+    if (messageType === '@@sync3k/SYNC3K_KEY_DERIVATION_ALGORITHM' ||
+      messageType === '@@sync3k/SYNC3K_ASK_FOR_KEYS' ||
+      messageType === '@@sync3k/SYNC3K_KEY_RESPONSE') {
       return Promise.resolve(msg);
     }
     const aesKeyPromise = this.deriveKey(latest, specs).then((key) => {
@@ -416,7 +416,7 @@ const cryptoDriver = new class {
 
   getMiddleware() {
     return (store) => (next) => (action) => {
-      if (action.type === 'SYNC3K_ENCRYPTED') {
+      if (action.type === '@@sync3k/SYNC3K_ENCRYPTED') {
         // Create promise for the decryption of the item.
         let decryptResolver;
         const decryptPromise = new Promise((resolve) => { decryptResolver = resolve });
@@ -432,7 +432,7 @@ const cryptoDriver = new class {
         });
         return;
       }
-      if (action.type === 'SYNC3K_KEY_RESPONSE' &&
+      if (action.type === '@@sync3k/SYNC3K_KEY_RESPONSE' &&
         action.targetPublicKey.x === this.ecdhKey[1].x &&
         action.targetPublicKey.y === this.ecdhKey[1].y &&
         this.waitingForKeyResponse) {
