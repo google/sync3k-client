@@ -7,7 +7,7 @@
 Install with `npm`:
 
 ```sh
-npm install --save-dev redux-sync3k
+npm install --save redux-sync3k
 ```
 
 ## Usage
