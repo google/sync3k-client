@@ -1,3 +1,17 @@
+// Copyright 2017 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as React from 'react';
 import './App.css';
 import Folder from './components/Folder';
@@ -17,7 +31,7 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
       return (
       <div>
         <div>Sync not initialized yet</div>
-        <form 
+        <form
           onSubmit={e => {
             e.preventDefault();
             const newTopic = topicInput.value.trim();
@@ -42,7 +56,7 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
 
     if (this.props.sync3k.latest !== '') {
       keyStrengthen = (
-      <form 
+      <form
         onSubmit={e => {
         const newSalt = base64js.fromByteArray(window.crypto.getRandomValues(new Uint8Array(32)));
         e.preventDefault();
@@ -67,7 +81,7 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
       mainForm = (
       <div>
         <Folder items={this.props.data} />
-        <form 
+        <form
           onSubmit={e => {
             e.preventDefault();
             this.props.dispatch(
@@ -81,18 +95,18 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
       </div>
       );
     }
-    
+
     return (
       <div>
         <div>{this.props.sync3k.key &&
           `x: ${this.props.sync3k.key.x}, y: ${this.props.sync3k.key.y}`}</div>
-        
+
         {mainForm}
         <div>Pending key requests:</div>
         {Object.keys(this.props.sync3k.keyRequests).map((k) =>
           <div key={k}>
             {k}
-            <button 
+            <button
               onClick={(e) => {
                 e.preventDefault();
                 this.props.dispatch(actions.giveKeys(this.props.sync3k.keyRequests[k]));
