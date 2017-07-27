@@ -1,5 +1,5 @@
 import { GenericStoreEnhancer, StoreEnhancerStoreCreator, Reducer, AnyAction } from 'redux';
-import { Sync3kState, Sync3kLocalState } from '../states/sync3kstate';
+import { Sync3kState, Sync3kLocalState } from '../states/sync3kState';
 import { sync3kReducer } from '../reducers/sync3kReducer';
 
 const synk3kTimeTraveler = <S>(reducer: Reducer<S>) => (state: S & Sync3kState, action: AnyAction) => {
