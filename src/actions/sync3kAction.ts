@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { KeyDerivationSpec } from '../states/sync3kState';
+import { AnyAction } from 'redux';
 
 export const travelBack = <S>(state: S) => ({
   type: '@@sync3k/SYNC3K_TRAVEL_BACK',
@@ -69,3 +70,8 @@ export const keyResponse = (publicKey: {}, targetPublicKey: {}, encryptedKeys: s
   targetPublicKey,
   encryptedKeys,
 });
+
+export const batchActions = (payload: Array<AnyAction>) => ({
+  type: '@@sync3k/SYNC3K_BATCH',
+  payload
+})

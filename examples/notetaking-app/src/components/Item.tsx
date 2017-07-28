@@ -19,26 +19,30 @@ import Fa from './Fa';
 import { connect } from 'react-redux';
 import { newItem, saveItem, removeItem, moveItem } from '../actions';
 
-class Item extends Component<{ item: any, dispatch: any }, {}> {
+class Item extends Component<{ item: any, dispatch: any }, {editText?: string}> {
   editModeTriggered = false;
+
+  state = {
+    editText: this.props.item.title || ''
+  }
 
   render() {
     const item = this.props.item;
 
     let titleDisplay;
     if (this.props.item.editMode || this.editModeTriggered) {
-      let inputNode;
       const saveHandler = e => {
         this.editModeTriggered = false;
         e.preventDefault();
-        this.props.dispatch(saveItem(item.key, { title: inputNode.value.trim(), editMode: false }));
+        this.props.dispatch(saveItem(item.key, { title: this.state.editText, editMode: false }));
       };
       titleDisplay = (
         <span>
         <input
-          defaultValue={item.title}
-          ref={node => inputNode = node}
+          value={this.state.editText}
           onKeyPress={e => e.key === 'Enter' && saveHandler(e)}
+          onChange={e => this.setState({editText: e.target.value})}
+          key={item.key}
         />
         <Fa fa="fa-floppy-o" onClick={saveHandler} />
         </span>
@@ -64,7 +68,6 @@ class Item extends Component<{ item: any, dispatch: any }, {}> {
         fa="fa-plus-square-o"
         onClick={e => {
           this.props.dispatch(newItem(item.key, {
-            title: 'New Item',
             editMode: true,
           }));
         }}

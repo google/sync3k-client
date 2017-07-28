@@ -14,7 +14,7 @@
 
 import Dexie from 'dexie';
 import uuidV4 = require('uuid/v4');
-import { travelBack, encryptedMessage, keyDerivation, setLocalEcdhKey, askForKeys, keyResponse, initializeSync } from '../actions/sync3kAction';
+import { travelBack, encryptedMessage, keyDerivation, setLocalEcdhKey, askForKeys, keyResponse, initializeSync, batchActions } from '../actions/sync3kAction';
 import base64js = require('base64-js');
 import scrypt = require('scrypt-async');
 import { Sync3kState } from '../states/sync3kState';
@@ -203,8 +203,10 @@ class SyncEngine {
       db.actions.put(data);
       db.localActions.where('uuid').equals(action._sync3k_id).delete();
     }).then(() => {
-      next(travelBack(this.headState));
-      next(action);
+      next(batchActions([
+        travelBack(this.headState),
+        action,
+      ]));
       return cryptoDriver.getDecryptPromise(action._sync3k_id);
     }).then(() => {
       this.watermark = data.id;
