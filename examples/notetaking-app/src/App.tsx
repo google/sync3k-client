@@ -18,7 +18,7 @@ import Folder from './components/Folder';
 import { newRootItem } from './actions';
 import { actions } from 'redux-sync3k';
 import { connect } from 'react-redux';
-import base64js from 'base64-js';
+import base64js = require('base64-js');
 import uuidV4 = require('uuid/v4');
 
 class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
@@ -58,8 +58,8 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
       keyStrengthen = (
       <form
         onSubmit={e => {
-        const newSalt = base64js.fromByteArray(window.crypto.getRandomValues(new Uint8Array(32)));
         e.preventDefault();
+        const newSalt = base64js.fromByteArray(window.crypto.getRandomValues(new Uint8Array(32)));
         this.props.dispatch(
           actions.chainKeyDerivation(uuidV4(), newSalt, 'SCRYPT', {
             N: 16384,

@@ -18,10 +18,23 @@ import { sync3kReducer } from '../reducers/sync3kReducer';
 
 const synk3kTimeTraveler = <S>(reducer: Reducer<S>) => function batcher(state: S & Sync3kState, action: AnyAction) {
   if (action.type === '@@sync3k/SYNC3K_TRAVEL_BACK') {
-    return action.state;
+    const {sync3k: {head, ...restSync3k}} = (state as Sync3kState);
+    
+    return {sync3k: {head, ...restSync3k}, ...head};
   }
   if (action.type === '@@sync3k/SYNC3K_BATCH') {
     return action.payload.reduce(batcher, state);
+  }
+  if (action.type === '@@sync3k/SYNC3K_MARK_HEAD_STATE') {
+    const {sync3k: {head, ...restSync3k}, ...rest} = (state as Sync3kState);
+    return {
+      sync3k: {
+        ...restSync3k,
+        head: rest,
+        watermark: action.watermark,
+      },
+      ... rest
+    };
   }
   return reducer(state, action);
 }

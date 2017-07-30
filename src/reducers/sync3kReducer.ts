@@ -15,7 +15,7 @@
 import { AnyAction } from 'redux';
 import { Sync3kLocalState } from '../states/sync3kState';
 
-export const sync3kReducer = (state: Sync3kLocalState = {latest:'', specs:{}, keyRequests: {}}, action: AnyAction) => {
+export const sync3kReducer = (state: Sync3kLocalState = {latest:'', specs:{}, keyRequests: {}, head: {}, watermark: -1}, action: AnyAction) => {
   switch (action.type) {
     case '@@sync3k/SYNC3K_INITIALIZE':
       return {...state, initialized: !action.askForKeys, waitingForKeys: action.askForKeys};

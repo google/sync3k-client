@@ -39,6 +39,11 @@ export type Sync3kLocalState = {
 
   /** True if Sync3k engine is initialized. */
   initialized?: boolean,
+
+  /** Latest known server state */
+  head?: {},
+
+  watermark?: Number,
 };
 
-export type Sync3kState = { sync3k?: Sync3kLocalState };
+export type Sync3kState = { sync3k: Sync3kLocalState };

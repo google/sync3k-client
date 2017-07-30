@@ -14,10 +14,9 @@
 
 import Dexie from 'dexie';
 import uuidV4 = require('uuid/v4');
-import { travelBack, encryptedMessage, keyDerivation, setLocalEcdhKey, askForKeys, keyResponse, initializeSync, batchActions } from '../actions/sync3kAction';
+import { travelBack, encryptedMessage, keyDerivation, setLocalEcdhKey, askForKeys, keyResponse, initializeSync, batchActions, markHeadState } from '../actions/sync3kAction';
 import base64js = require('base64-js');
 import scrypt = require('scrypt-async');
-import { Sync3kState } from '../states/sync3kState';
 
 class SyncEngine {
   baseUrl: string;
@@ -27,8 +26,6 @@ class SyncEngine {
   password: string;
   webSocket: WebSocket;
   db;
-  headState: Sync3kState;
-  watermark: number;
   encryptionInitialized = false;
   ecdhKey;
   askForKeys;
@@ -53,18 +50,17 @@ class SyncEngine {
   initialize() {
     const db = this.db;
     const next = this.next;
+    cryptoDriver.setStore(this.store);
     cryptoDriver.setPassword(this.password);
     cryptoDriver.setWaitingForKeyResponse(this.askForKeys);
+    this.next(markHeadState(-1));
     if (this.askForKeys) {
-      const preKeyInitState = this.store.getState();
       cryptoDriver.setOnKeyReceive((password) => {
         this.stopSync();
-        this.next(travelBack(preKeyInitState));
+        this.next(travelBack());
         this.store.dispatch(initializeSync(this.baseUrl, this.topic, password, false));
       });
     }
-
-    let watermark = -1;
 
     let ecdhKeyPromise = Promise.resolve();
 
@@ -97,6 +93,8 @@ class SyncEngine {
       });
     }
 
+    let watermark = -1;
+
     return ecdhKeyPromise.then(() => db.actions.orderBy('id').toArray((actions) => {
       const decryptPromises = actions.map((action) => {
         watermark = action.id;
@@ -108,9 +106,8 @@ class SyncEngine {
       // TODO: remove.
       return new Promise(resolve => setTimeout(resolve, 1000));
     }).then(() => {
-      this.watermark = watermark;
-      this.headState = this.store.getState();
-
+      next(markHeadState(watermark));
+    }).then(() => {
       // Play uncommitted messages.
       return this.playLocalActions();
     }).then(() => {
@@ -125,7 +122,7 @@ class SyncEngine {
       return;
     }
 
-    this.webSocket = new WebSocket(`${this.baseUrl}/${this.topic}/${this.watermark + 1}`);
+    this.webSocket = new WebSocket(`${this.baseUrl}/${this.topic}/${this.store.getState().sync3k.watermark + 1}`);
     this.webSocket.onopen = () => this.startCommitLocalEntries();
     this.webSocket.onclose = () => setTimeout(() => this.startSync(), 10000);
     this.webSocket.onmessage = (data) => this.receiveAction(data);
@@ -191,7 +188,7 @@ class SyncEngine {
   receiveAction(event) {
     const data = JSON.parse(event.data);
 
-    if (data.id <= this.watermark) {
+    if (data.id <= this.store.getState().sync3k.watermark) {
       return Promise.resolve(true);
     }
 
@@ -203,14 +200,21 @@ class SyncEngine {
       db.actions.put(data);
       db.localActions.where('uuid').equals(action._sync3k_id).delete();
     }).then(() => {
+      return cryptoDriver.decryptMessage(action);
+    }).then((action) => {
+      if (action.type === '@@sync3k/SYNC3K_KEY_RESPONSE') {
+        // FIXME: Kludge to make key response go through middleware.
+        next(action);
+        return Promise.resolve(true);
+      }
+      
       next(batchActions([
-        travelBack(this.headState),
+        travelBack(),
         action,
       ]));
       return cryptoDriver.getDecryptPromise(action._sync3k_id);
     }).then(() => {
-      this.watermark = data.id;
-      this.headState = this.store.getState();
+      next(markHeadState(data.id));
       return this.playLocalActions();
     });
   }
@@ -265,6 +269,7 @@ const cryptoDriver = new class {
   decryptQueue = [];
   onKeyReceive = (_: string) => { };
   receivedKeys = false;
+  store: any;
 
   setPassword(password) {
     this.password = password;
@@ -280,6 +285,10 @@ const cryptoDriver = new class {
 
   setOnKeyReceive(onKeyReceiveHandler) {
     this.onKeyReceive = onKeyReceiveHandler;
+  }
+
+  setStore(store) {
+    this.store = store;
   }
 
   deriveKey(current, specs) {
@@ -428,6 +437,25 @@ const cryptoDriver = new class {
 
         return keyResponse(this.ecdhKey[0 /* Public Key */], targetPublicKey, base64js.fromByteArray(finalArray));
       }).catch((err: Error) => console.error(err));
+  }
+
+  decryptMessage(action) {
+    if (action.type === '@@sync3k/SYNC3K_ENCRYPTED') {
+        // Create promise for the decryption of the item.
+        let decryptResolver;
+        const decryptPromise = new Promise((resolve) => { decryptResolver = resolve });
+        this.decrypted[action._sync3k_id] = decryptPromise;
+
+        if (this.waitingForKeyResponse) {
+          return decryptPromise;
+        }
+
+        this.decrypt(this.store.getState(), action).then((decrypted: string) => {
+          decryptResolver(JSON.parse(decrypted));
+        });
+        return decryptPromise;      
+    }
+    return Promise.resolve(action);
   }
 
   getMiddleware() {

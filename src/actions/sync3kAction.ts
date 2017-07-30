@@ -15,9 +15,8 @@
 import { KeyDerivationSpec } from '../states/sync3kState';
 import { AnyAction } from 'redux';
 
-export const travelBack = <S>(state: S) => ({
+export const travelBack = () => ({
   type: '@@sync3k/SYNC3K_TRAVEL_BACK',
-  state,
 });
 
 export const initializeSync = (baseUrl: string, topic: string, password: string, askForKeys: boolean) => ({
@@ -73,5 +72,10 @@ export const keyResponse = (publicKey: {}, targetPublicKey: {}, encryptedKeys: s
 
 export const batchActions = (payload: Array<AnyAction>) => ({
   type: '@@sync3k/SYNC3K_BATCH',
-  payload
-})
+  payload,
+});
+
+export const markHeadState = (watermark: Number) => ({
+  type: '@@sync3k/SYNC3K_MARK_HEAD_STATE',
+  watermark,
+});
