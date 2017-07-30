@@ -172,17 +172,17 @@ class SyncEngine {
       });
   }
 
-  playLocalActions() {
-    const db = this.db;
-    const next = this.next;
 
+  readLocalActions() {
+    return this.db.localActions.orderBy('id').toArray((actions) => 
+      actions.map((action) => JSON.parse(action['message'])));
+  }
+
+  playLocalActions() {
     // Play uncommitted messages.
-    return db.localActions.orderBy('id').toArray((actions) => {
-      actions.forEach((action) => {
-        next(JSON.parse(action['message']));
-      });
-      return true;
-    });
+    return this.readLocalActions().then((actions) => {
+      this.next(batchActions([...actions]));
+    })
   }
 
   receiveAction(event) {
@@ -207,15 +207,20 @@ class SyncEngine {
         next(action);
         return Promise.resolve(true);
       }
-      
-      next(batchActions([
+      const localActions = this.readLocalActions();
+
+      return localActions.then((allLocalActions) => ({
+        action,
+        localActions: allLocalActions,
+      }));
+    }).then(({action, localActions}) => {
+      const myLocalActions = localActions || [];
+      return next(batchActions([
         travelBack(),
         action,
+        markHeadState(data.id),
+        ...myLocalActions,
       ]));
-      return cryptoDriver.getDecryptPromise(action._sync3k_id);
-    }).then(() => {
-      next(markHeadState(data.id));
-      return this.playLocalActions();
     });
   }
 
