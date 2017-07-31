@@ -1,7 +1,7 @@
 {
-  "name": "redux-sync3k",
+  "name": "sync3k-client",
   "version": "0.0.0",
-  "description": "redux-sync3k is an offline-first event-sourcing synchronization engine with optional end-to-end encryption.",
+  "description": "sync3k is an offline-first event-sourcing synchronization engine with optional end-to-end encryption.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
