@@ -21,7 +21,7 @@ import './index.css';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './reducers';
-import { enhancer } from 'redux-sync3k';
+import { enhancer } from 'sync3k-client';
 
 import thunk from 'redux-thunk';
 

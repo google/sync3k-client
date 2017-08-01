@@ -16,7 +16,7 @@ import * as React from 'react';
 import './App.css';
 import Folder from './components/Folder';
 import { newRootItem } from './actions';
-import { actions } from 'redux-sync3k';
+import { actions } from 'sync3k-client';
 import { connect } from 'react-redux';
 import base64js = require('base64-js');
 import uuidV4 = require('uuid/v4');
