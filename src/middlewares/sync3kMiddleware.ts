@@ -199,21 +199,15 @@ class SyncEngine {
     return db.transaction('rw', db.actions, db.localActions, () => {
       db.actions.put(data);
       db.localActions.where('uuid').equals(action._sync3k_id).delete();
-    }).then(() => {
-      return cryptoDriver.decryptMessage(action);
-    }).then((action) => {
+      return this.readLocalActions();
+    }).then((localActions) => {
+      return cryptoDriver.decryptMessage(action).then((decryptedAction) => ({action: decryptedAction, localActions}));
+    }).then(({action, localActions}) => {
       if (action.type === '@@sync3k/SYNC3K_KEY_RESPONSE') {
         // FIXME: Kludge to make key response go through middleware.
         next(action);
         return Promise.resolve(true);
       }
-      const localActions = this.readLocalActions();
-
-      return localActions.then((allLocalActions) => ({
-        action,
-        localActions: allLocalActions,
-      }));
-    }).then(({action, localActions}) => {
       const myLocalActions = localActions || [];
       return next(batchActions([
         travelBack(),
