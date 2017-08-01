@@ -1,6 +1,6 @@
 {
   "name": "sync3k-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "sync3k is an offline-first event-sourcing synchronization engine with optional end-to-end encryption.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
