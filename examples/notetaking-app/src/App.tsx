@@ -25,23 +25,26 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
   render() {
 
     if (!this.props.sync3k || (!this.props.sync3k.initialized && !this.props.sync3k.waitingForKeys)) {
-      let topicInput;
-      let passwordInput;
-      let askForKeysInput;
+      let serverAddressInput: HTMLInputElement | null;
+      let topicInput: HTMLInputElement | null;
+      let passwordInput: HTMLInputElement | null;
+      let askForKeysInput: HTMLInputElement | null;
       return (
       <div>
         <div>Sync not initialized yet</div>
         <form
           onSubmit={e => {
             e.preventDefault();
-            const newTopic = topicInput.value.trim();
-            const password = passwordInput.value.trim();
-            const askForKeys = askForKeysInput.checked;
+            const serverAddress = serverAddressInput!.value.trim();
+            const newTopic = topicInput!.value.trim();
+            const password = passwordInput!.value.trim();
+            const askForKeys = askForKeysInput!.checked;
             this.props.dispatch(
-              actions.initializeSync(`ws://${window.location.hostname}:8080/kafka`, newTopic, password, askForKeys));
-            topicInput.value = '';
+              actions.initializeSync(serverAddress, newTopic, password, askForKeys));
+            topicInput!.value = '';
           }}
         >
+          Server Address: <input ref={node => serverAddressInput = node} defaultValue={`ws://${window.location.hostname}:8080/kafka`} /><br />
           Topic: <input ref={node => topicInput = node} /><br />
           Password: <input ref={node => passwordInput = node} /><br />
           Ask for Keys: <input ref={node => askForKeysInput = node} type="checkbox" /><br />
