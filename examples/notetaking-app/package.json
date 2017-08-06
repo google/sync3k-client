@@ -19,6 +19,8 @@
     "sync3k-client": "file:..\\..",
     "uuid": "^3.1.0"
   },
+  "devDependencies": {
+  },
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
