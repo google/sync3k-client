@@ -2,11 +2,11 @@
   "name": "sync3k-client",
   "version": "0.0.2",
   "description": "sync3k is an offline-first event-sourcing synchronization engine with optional end-to-end encryption.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "node node_modules/typescript/bin/tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env NODE_PATH=. jasmine --helper=node_modules/ts-node/register.js test/**/*.ts"
   },
   "keywords": [],
   "authors": [
@@ -14,7 +14,11 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jasmine": "^2.5.53",
+    "cross-env": "^5.0.5",
+    "jasmine": "^2.7.0",
     "redux": "^3.7.2",
+    "ts-node": "^3.3.0",
     "typescript": "^2.4.2"
   },
   "dependencies": {

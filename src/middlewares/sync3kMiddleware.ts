@@ -232,7 +232,7 @@ class SyncEngine {
 }
 
 export const SyncActions = (store) => (next) => {
-  let syncEngine;
+  let syncEngine: SyncEngine;
 
   return (action) => {
     if (action.type === '@@sync3k/SYNC3K_INITIALIZE') {
