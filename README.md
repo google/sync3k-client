@@ -10,6 +10,8 @@ Install with `npm`:
 npm install --save sync3k-client
 ```
 
+Refer to [sync3k-server](https://github.com/google/sync3k-server) for installing server-side components.
+
 ## Usage
 
 Currently, `sync3k-client` is offered as a `redux` store enhancer. First, use sync3k store enhancer when creating a store:
