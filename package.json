@@ -6,7 +6,8 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "node node_modules/typescript/bin/tsc",
-    "test": "cross-env NODE_PATH=. jasmine --helper=node_modules/ts-node/register.js test/**/*.ts"
+    "test": "cross-env NODE_PATH=. ts-node node_modules/jasmine/bin/jasmine.js test/**/*.ts",
+    "test:coverage": "cross-env NODE_PATH=. ts-node node_modules/istanbul/lib/cli.js cover -e .ts  -x \"*.d.ts\" node_modules/jasmine/bin/jasmine.js -- test/**/*.ts"
   },
   "keywords": [],
   "authors": [
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@types/jasmine": "^2.5.53",
     "cross-env": "^5.0.5",
+    "istanbul": "^1.1.0-alpha.1",
     "jasmine": "^2.7.0",
     "redux": "^3.7.2",
     "ts-node": "^3.3.0",
