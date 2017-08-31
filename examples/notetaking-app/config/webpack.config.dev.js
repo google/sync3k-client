@@ -118,7 +118,6 @@ module.exports = {
         test: /\.js$/,
         loader: require.resolve('source-map-loader'),
         enforce: 'pre',
-        include: [paths.appSrc, paths.sync3kDist],
       },
       // ** ADDING/UPDATING LOADERS **
       // The "file" loader handles all assets unless explicitly excluded.
