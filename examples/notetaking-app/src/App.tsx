@@ -50,6 +50,11 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
           Ask for Keys: <input ref={node => askForKeysInput = node} type="checkbox" /><br />
           <button type="submit">Connect!</button>
         </form>
+        <h3>Usage:</h3>
+        <ul>
+          <li>For plain-text channel, leave Password field blank and Ask for Keys checkbox unchecked</li>
+          <li>For end-to-end encryption, either fill-in Password field or check Ask for Keys</li>
+        </ul>
       </div>
       );
     }

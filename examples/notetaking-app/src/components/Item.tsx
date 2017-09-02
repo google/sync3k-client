@@ -24,7 +24,7 @@ class Item extends Component<{ item: any, dispatch: any }, {editText?: string}> 
 
   state = {
     editText: this.props.item.title || ''
-  }
+  };
 
   render() {
     const item = this.props.item;
