@@ -14,4 +14,5 @@
 
 describe('sync3k', () => {
   // TODO(yiinho): Add integration tests.
+  it('should pass', () => {});
 });
