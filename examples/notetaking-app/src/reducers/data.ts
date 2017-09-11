@@ -15,29 +15,29 @@
 import * as lodash from 'lodash';
 import { AnyAction } from 'redux';
 
-const addNewItem = (items, parentKey, newItem) =>
+const addNewItem = (items, parentKey, newItem, committed) =>
   items.map((item) => {
     if (item.key !== parentKey) {
       return {
         ...item,
-        subitem: item.subitem ? addNewItem(item.subitem, parentKey, newItem) : []
+        subitem: item.subitem ? addNewItem(item.subitem, parentKey, newItem, committed) : []
       };
     }
     return {
       ...item,
-      subitem: [...(item.subitem || []), newItem]
+      subitem: [...(item.subitem || []), {...newItem, committed}]
     };
   });
 
-const saveItem = (items, key, newItem) =>
+const saveItem = (items, key, newItem, committed) =>
   items.map((item) => {
     if (item.key !== key) {
       return {
         ...item,
-        subitem: item.subitem ? saveItem(item.subitem, key, newItem) : []
+        subitem: item.subitem ? saveItem(item.subitem, key, newItem, committed) : []
       };
     }
-    return Object.assign({}, item, newItem);
+    return Object.assign({}, item, {...newItem, committed});
   });
 
 const removeItem = (items, key) =>
@@ -81,11 +81,11 @@ const moveItemDown = (items, key) =>
 export default function(state: Array<{}> = [], action: AnyAction) {
   switch (action.type) {
     case 'NEW_ROOT_ITEM':
-      return [...state, action.item];
+      return [...state, {...action.item, committed: action['@@sync3k/SYNC3K_COMMITTED']}];
     case 'NEW_ITEM':
-      return addNewItem(state, action.parentKey, action.item);
+      return addNewItem(state, action.parentKey, action.item, action['@@sync3k/SYNC3K_COMMITTED']);
     case 'SAVE_ITEM':
-      return saveItem(state, action.key, action.item);
+      return saveItem(state, action.key, action.item, action['@@sync3k/SYNC3K_COMMITTED']);
     case 'REMOVE_ITEM':
       return removeItem(state, action.key);
     case 'MOVE_ITEM':

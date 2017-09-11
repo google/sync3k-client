@@ -98,7 +98,7 @@ class SyncEngine {
     return ecdhKeyPromise.then(() => db.actions.orderBy('id').toArray((actions) => {
       const decryptPromises = actions.map((action) => {
         watermark = action.id;
-        next(JSON.parse(action['message']));
+        next({...JSON.parse(action['message']), '@@sync3k/SYNC3K_COMMITTED': true});
         return cryptoDriver.getDecryptPromise(action._sync3k_id);
       });
       return Promise.all(decryptPromises);
@@ -211,7 +211,7 @@ class SyncEngine {
       const myLocalActions = localActions || [];
       return next(batchActions([
         travelBack(),
-        action,
+        {...action, '@@sync3k/SYNC3K_COMMITTED': true},
         markHeadState(data.id),
         ...myLocalActions,
       ]));
@@ -470,7 +470,7 @@ const cryptoDriver = new class {
         }
 
         this.decrypt(store.getState(), action).then((decrypted: string) => {
-          next(JSON.parse(decrypted));
+          next({...JSON.parse(decrypted), '@@sync3k/SYNC3K_COMMITTED': action['@@sync3k/SYNC3K_COMMITTED']});
           decryptResolver();
         });
         return;

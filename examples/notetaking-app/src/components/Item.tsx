@@ -84,6 +84,7 @@ class Item extends Component<{ item: any, dispatch: any }, {editText?: string}> 
         fa="fa-arrow-down"
         onClick={e => { this.props.dispatch(moveItem(item.key, 'DOWN')); }}
       />
+      {item.committed && <Fa fa="fa-check" onClick={e => undefined}/>}
       {item.subitem && item.subitem !== [] && <Folder items={item.subitem} />}
       </li>
     );
