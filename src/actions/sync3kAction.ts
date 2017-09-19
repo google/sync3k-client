@@ -19,7 +19,7 @@ export const travelBack = () => ({
   type: '@@sync3k/SYNC3K_TRAVEL_BACK',
 });
 
-export const initializeSync = (baseUrl: string, topic: string, password: string, askForKeys: boolean) => ({
+export const initializeSync = (baseUrl: string, topic: string, password: string = '', askForKeys: boolean = false) => ({
   type: '@@sync3k/SYNC3K_INITIALIZE',
   baseUrl,
   topic,
