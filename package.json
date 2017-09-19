@@ -1,6 +1,6 @@
 {
   "name": "sync3k-client",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "sync3k is an offline-first event-sourcing synchronization engine with optional end-to-end encryption.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -40,9 +40,12 @@
       "js"
     ],
     "transform": {
-      "\\.(ts|tsx)$": "<rootDir>/config/jest/typescriptTransform.js"
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "roots": ["src", "test"],
+    "roots": [
+      "src",
+      "test"
+    ],
     "testRegex": "test/.*\\.ts",
     "moduleDirectories": [
       "node_modules",
