@@ -55,6 +55,7 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
           <li>For plain-text channel, leave Password field blank and Ask for Keys checkbox unchecked</li>
           <li>For end-to-end encryption, either fill-in Password field or check Ask for Keys</li>
         </ul>
+        <p>Also checkout <a href="https://demo-stats.sync3k.io">real-time analytics page</a></p>
       </div>
       );
     }
