@@ -29,6 +29,11 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
       let topicInput: HTMLInputElement | null;
       let passwordInput: HTMLInputElement | null;
       let askForKeysInput: HTMLInputElement | null;
+      if (window.location.hash !== '') {
+        const topicFromHash = window.location.hash.substr(1);
+        this.props.dispatch(
+          actions.initializeSync(`ws://${window.location.hostname}:8080/kafka`, topicFromHash, '', false));
+      }
       return (
       <div>
         <div>Sync not initialized yet</div>
@@ -42,6 +47,9 @@ class App extends React.Component<{sync3k: any, dispatch: any, data: any}, {}> {
             this.props.dispatch(
               actions.initializeSync(serverAddress, newTopic, password, askForKeys));
             topicInput!.value = '';
+            if (password === '' && askForKeys === false) {
+              window.location.hash = newTopic;
+            }
           }}
         >
           Server Address: <input ref={node => serverAddressInput = node} defaultValue={`ws://${window.location.hostname}:8080/kafka`} /><br />
